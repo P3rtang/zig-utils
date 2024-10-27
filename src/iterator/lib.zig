@@ -1,2 +1,2 @@
-pub usingnamespace @import("iterator/iterator.zig");
-pub usingnamespace @import("iterator/peekable.zig");
+pub usingnamespace @import("iterator.zig");
+pub usingnamespace @import("peekable.zig");

@@ -52,6 +52,7 @@
         // fetching from tarballs, file system paths, and version control all result
         // in the same contents hash.
         "build.zig",
+        "src",
         // For example...
         //"build.zig",
         //"build.zig.zon",
