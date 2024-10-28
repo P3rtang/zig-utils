@@ -30,8 +30,10 @@ jobs:
           mkdir zig
           curl -N -L https://ziglang.org/download/0.12.0/zig-linux-x86_64-0.12.0.tar.xz -o zig/zig-0.12.tar.xz
           tar -xf zig/zig-0.12.tar.xz -C zig
-          sudo ln -sf zig/zig /usr/bin/zig
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: zig build test
+      - name: Run unit tests
+        run: zig/zig-linux-x86_64-0.12.0/zig build test
+
+      - name: Run fmt check
+        run: zig/zig-linux-x86_64-0.12.0/zig fmt --check ./**/*.zig
