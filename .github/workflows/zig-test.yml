@@ -27,10 +27,10 @@ jobs:
 
       - name: install dependencies
         run: |
-          mkdir /zig
-          curl -N -L https://ziglang.org/download/0.12.0/zig-linux-x86_64-0.12.0.tar.xz -o /zig/zig-0.12.tar.xz
-          tar -xf $HOME/.packages/zig/zig-0.12.tar.xz -C /zig/zig-0.12
-          ln -sf /zig/zig-0.12/zig /usr/bin/zig
+          mkdir zig
+          curl -N -L https://ziglang.org/download/0.12.0/zig-linux-x86_64-0.12.0.tar.xz -o zig/zig-0.12.tar.xz
+          tar -xf zig/zig-0.12.tar.xz -C zig/zig-0.12
+          sudo ln -sf zig/zig-0.12/zig /usr/bin/zig
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
