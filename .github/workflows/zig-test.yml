@@ -28,7 +28,7 @@ jobs:
       - name: install dependencies
         run: |
           mkdir zig
-          curl -N -L https://ziglang.org/download/0.14.0/zig-linux-x86_64-0.14.0.tar.xz -o zig/zig-0.14.tar.xz
+          curl -N -L https://ziglang.org/builds/zig-linux-x86_64-0.14.0-dev.3445+6c3cbb0c8.tar.xz -o zig/zig-0.14.tar.xz
           tar -xf zig/zig-0.14.tar.xz -C zig
 
       # Runs a single command using the runners shell
