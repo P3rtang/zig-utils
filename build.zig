@@ -4,7 +4,7 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    _ = b.addModule("iterator", .{ .root_source_file = .{ .path = "src/iterator/lib.zig" }, .optimize = optimize, .target = target });
+    _ = b.addModule("iterator", .{ .root_source_file = b.path("src/iterator/lib.zig"), .optimize = optimize, .target = target });
 
     const test_step = b.step("test", "run all tests");
 
@@ -35,7 +35,7 @@ fn SetupTest(b: *std.Build, step: *std.Build.Step, t: Test) void {
     const c = b.addTest(.{
         .name = t.name,
         .root_source_file = t.path,
-        .test_runner = b.path("test_runner.zig"),
+        .test_runner = .{ .path = b.path("test_runner.zig"), .mode = .simple },
     });
 
     if (t.config.useLibC) {

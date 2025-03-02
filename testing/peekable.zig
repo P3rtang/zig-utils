@@ -6,7 +6,7 @@ test "peekable" {
         const Self = @This();
 
         index: usize = 0,
-        iterator: Iterator(usize) = .{ .nextFn = next, .methods = .{ .resetFn = reset } },
+        iterator: Iterator(usize) = .{ .nextFn = next },
         items: *const [4]usize = &.{ 2, 5, 8, 1000 },
 
         fn next(iter: *Iterator(usize)) ?usize {

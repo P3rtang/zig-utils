@@ -24,7 +24,7 @@ pub fn Iterator(comptime T: type) type {
         pub const IteratorMethods = struct {
             lenFn: *const fn (*Self) usize = _len,
             resetFn: *const fn (*Self) void = _reset,
-            collectFn: *const fn (*Self, std.mem.Allocator) std.mem.Allocator.Error!std.ArrayList(T) = _collect,
+            collectFn: *const fn (*Self, std.mem.Allocator) std.ArrayList(T) = _collect,
             peekFn: ?*const fn (*Self) ?T = null,
         };
 
@@ -50,8 +50,8 @@ pub fn Iterator(comptime T: type) type {
         const FlattenedIterator = struct {
             const U = (blk: {
                 switch (@typeInfo(T)) {
-                    .ErrorUnion => |err| break :blk err.payload,
-                    .Optional => |opt| break :blk opt.child,
+                    .error_union => |err| break :blk err.payload,
+                    .optional => |opt| break :blk opt.child,
                     else => break :blk T,
                 }
             });
@@ -63,11 +63,11 @@ pub fn Iterator(comptime T: type) type {
                 const self = iter.cast(@This());
 
                 while (self.parent_ptr.next()) |item| {
-                    if (@typeInfo(T) == .ErrorUnion) {
+                    if (@typeInfo(T) == .error_union) {
                         if (item) |u| {
                             return u;
                         } else |_| {}
-                    } else if (@typeInfo(T) == .Optional) {
+                    } else if (@typeInfo(T) == .optional) {
                         if (item) |u| {
                             return u;
                         }
@@ -81,7 +81,7 @@ pub fn Iterator(comptime T: type) type {
         fn MappedIterator(comptime U: type) type {
             return struct {
                 parent_ptr: *Self,
-                iterator: Iterator(U) = .{ .nextFn = call, .methods = .{ .resetFn = @This().reset } },
+                iterator: Iterator(U) = .{ .nextFn = call },
                 mapFn: *const fn (T) U,
 
                 fn call(iter: *Iterator(U)) ?U {
@@ -189,14 +189,15 @@ pub fn Iterator(comptime T: type) type {
             return MappedIterator(U){ .parent_ptr = self, .mapFn = callback };
         }
 
-        pub fn collect(self: *Self, alloc: std.mem.Allocator) !std.ArrayList(T) {
+        pub fn collect(self: *Self, alloc: std.mem.Allocator) std.ArrayList(T) {
             return self.methods.collectFn(self, alloc);
         }
 
-        fn _collect(self: *Self, alloc: std.mem.Allocator) !std.ArrayList(T) {
+        fn _collect(self: *Self, alloc: std.mem.Allocator) std.ArrayList(T) {
             var list = std.ArrayList(T).init(alloc);
+
             while (self.next()) |item| {
-                try list.append(item);
+                list.append(item) catch std.debug.defaultPanic("Out of memory", null);
             }
 
             return list;
@@ -228,8 +229,8 @@ pub fn Iterator(comptime T: type) type {
         /// Flat_err will convert an iterator of type error!type to !Iterator(type)
         /// for this to work the iterator has to consume and collect every element
         /// this means for this to be useful the iterator has to be resettable
-        pub fn flat_err(self: *Self) @typeInfo(T).ErrorUnion.error_set!FlattenedIterator {
-            if (@typeInfo(T) != .ErrorUnion) {
+        pub fn flat_err(self: *Self) @typeInfo(T).error_union.error_set!FlattenedIterator {
+            if (@typeInfo(T) != .error_union) {
                 @compileError("Iterator Type has to be ErrorUnion");
             }
 
